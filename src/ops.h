@@ -140,4 +140,8 @@ void op_shl(void);
 
 void op_shr(void);
 
+/* Print the stack to STDOUT. */
+
+void op_stackprint(void);
+
 #endif /* _OPS_H_ */

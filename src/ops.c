@@ -170,3 +170,19 @@ void op_shr(void){
      */
      _push((_pop() >> _pop()));
 }
+
+void op_stackprint(void){
+     /*
+       Prints the stacks to STDOUT; does not manipulate stack in any
+       way.
+     */
+     int i;
+     printf("Data stack (current depth: %i):\n", (ds_p+1));
+     for(i=0; i < (ds_p+1); i++)
+	  printf("%i\t", i);
+
+     printf("\n");
+     for(i=0; i < (ds_p+1); i++)
+	  printf("%x\t", data_stack[i]);
+     printf("\n");
+}

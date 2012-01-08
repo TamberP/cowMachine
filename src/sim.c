@@ -69,6 +69,9 @@ void decode(muword opcode){
      case 0x10:
 	  op_shr();
 	  break;
+     case 0xFF:
+	  op_stackprint();
+	  break;
      default:
 	  crash(EBADOP);
      }

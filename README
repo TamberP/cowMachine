@@ -1,0 +1,196 @@
+# cowMachines processor simulator
+
+Copyright (c) 2012 Tamber Penketh <tamber@furryhelix.co.uk>
+
+## Description
+
+The cowMachines processor is a simple, stack-based design; with two
+stacks (data and return), 2 stack counters, program counter, and some
+program memory.
+
+It is designed to be relatively easy to experiment with, and tweak.
+The word-width of the 'machine' is adjustable by choosing a different
+make target.
+
+By default, the word-width is 8 bits.
+
+    8-bit  - make
+    16-bit - make 16
+    32-bit - make 32
+    64-bit - make 64
+
+(Why 'cowMachine'? Because I had µ (mu) stuck in my brain whilst
+thinking about microprocessors, so it got stuck with the name muPU.
+If you read that out loud, and you're almost as childish as I am,
+you'll see a small issue with it. And so, it became the cowMachine.)
+
+## License
+
+  Permission to use, copy, modify, and distribute this software for
+any purpose with or without fee is hereby granted, provided that the
+above copyright notice and this permission notice appear in all
+copies.
+
+  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUHTORS DISCLAIM ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
+AUTHORS BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
+DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
+PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+
+# Programming the cowMachine
+
+  The cowMachine's instruction format is based on Forth; and should be
+relatively easy to program, if you know that meta-language.
+
+The Forth program needs to be converted into binary format to be
+executable on the cowMachine; a process that, so far, has to be done
+manually.
+
+However, this is rather simple, if time consuming; and the binary
+executable format is intentionally very simple.
+
+It consists of a 4-byte header, then the machine-code of the program
+you want to execute; which is loaded into the program memory. Nothing
+more.
+
+To create an executable format file, which is loaded into the
+cowMachine by running ./cm -e <path to executable>, one needs to:
+
+1. Add the 4 byte header to the file.
+2. Manually convert/assemble your Forth to the binary format.
+3. Tear hair out
+4. Attempt to run
+5. until successful, GOTO 2
+
+## Binary header
+
+Each cowMachine executable has a 4 byte header before the actual
+assembled code.
+
+The header format is as follows:
+
+    2 octets - signature - 0x4D 0x55 ("MU")
+    1 octet  - target word length
+    0x00 as padding.
+
+The signature, 'MU', is required; or the loading mechanism will reject
+the file.
+
+The target word length octet is, simply put, the hex representation of
+the number of bits in a word the author of the .cow file was writing
+for.
+
+This is to prevent Bad Things from happening if one was to try run an
+executable written for a 64-bit cow, on an 8-bit cow.
+
+The padding byte is there simply to align the header to 32 bits.
+
+**Note**: It is likely that endianness will cause issues when trying
+to write/read executable files for >=16-bit cows; if this is the case,
+the padding byte *may* be changed to instead indicate version of
+executable format, to accommodate extension of the header, to handle
+endianness and other features.
+
+## Machine-code
+
+Below are a list of the currently implemented, and planned,
+instructions; they are listed with their opcode, name, equivalent
+Forth symbol, stack effect and a description.
+
+### 0x00 halt
+
+      ()
+Stops execution of the program.
+
+### 0x01 store
+
+    ! (n1 addr -- )
+Store value n1 at location addr in program memory
+
+### 0x02 fetch
+
+    @ (addr -- n1)
+Fetch value from location addr in program memory
+
+### 0x03 push
+
+      ( -- n1)
+
+Two-word instruction. First word is the op-code (0x03); second is the
+value to push onto the data stack.
+
+### 0x04 add
+
+    + (n1 n2 -- (n1 + n2))
+
+Add the top two values from the stack together, pushing the result
+onto the top of the stack.
+
+### 0x05 subtract
+
+    - (n1 n2 -- (n1 - n2))
+
+Subtract the value at the top of the stack, from the value second on
+the stack; pushing the result onto the top of the stack in their place.
+
+### 0x06 drop
+
+    drop (n1 n2 -- n1)
+
+Discard the value currently at the top of the stack.
+
+### 0x07 dup
+
+    dup (n1 -- n1 n1)
+
+Duplicate the value currently at the top of the stack.
+
+### 0x08 over
+
+    over (n1 n2 -- n1 n2 n1)
+
+Duplicate the value currently at #2 on the stack to the top of the
+stack.
+
+### 0x09 mult
+
+    * (n1 n2 -- (n1 * n2))
+
+Multiply the top two values from the data stack together.
+
+### 0x0A div
+    / (n1 n2 -- (n1 / n2))
+
+Divide the value at #2 on the stack by the value at the top of the
+stack.
+
+### 0x0B xor
+
+Bitwise XOR of the top two values on the stack
+
+### 0x0C OR
+
+Bitwise OR of the top two values on the stack
+
+### 0x0D AND
+
+Bitwise AND of the top two values on DS
+
+### 0x0E NOT
+
+Bitwise NOT of the top value on the stack.
+
+# Not yet implemented (TODO list)
+
+* Conditionals
+* Branching/returning
+* A bunch of error checking
+* Any method of communicating with the outside world
+
+# Bugs
+
+* Lots
+* Probably some related to endianness

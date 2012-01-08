@@ -132,4 +132,12 @@ void op_exit(void);
 
 void op_push(void);
 
+/* Shift value at n1 left by n2 places */
+
+void op_shl(void);
+
+/* Shift value at n1 right by n2 places */
+
+void op_shr(void);
+
 #endif /* _OPS_H_ */

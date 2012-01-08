@@ -154,3 +154,19 @@ void op_over(void){
      _push(n2);
      _push(n1);
 }
+
+void op_shl(void){
+     /*
+       (n1 n2 -- (n1 << n2))
+       Shift n1 left by n2 places.
+     */
+     _push((_pop() << _pop()));
+}
+
+void op_shr(void){
+     /*
+	(n1 n2 -- (n1 >> n2 ))
+	Shift n1 right by n2 places.
+     */
+     _push((_pop() >> _pop()));
+}

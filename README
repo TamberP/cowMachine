@@ -4,9 +4,9 @@ Copyright (c) 2012 Tamber Penketh <tamber@furryhelix.co.uk>
 
 ## Description
 
-The cowMachines processor is a simple, stack-based design; with two
-stacks (data and return), 2 stack counters, program counter, and some
-program memory.
+The cowMachine is a simple, stack-based design; with two stacks (data
+and return), 2 stack counters, program counter, and some program
+memory.
 
 It is designed to be relatively easy to experiment with, and tweak.
 The word-width of the 'machine' is adjustable by choosing a different
@@ -19,10 +19,23 @@ By default, the word-width is 8 bits.
     32-bit - make 32
     64-bit - make 64
 
-(Why 'cowMachine'? Because I had µ (mu) stuck in my brain whilst
-thinking about microprocessors, so it got stuck with the name muPU.
-If you read that out loud, and you're almost as childish as I am,
-you'll see a small issue with it. And so, it became the cowMachine.)
+As standard, the cowMachine has 512 kilowords of program memory; and
+stacks 5 deep. Both of these can be changed very easily:
+
+To increase the amount of memory available, change `PROG_MEMORY_SIZE`
+in sim.h. `KILOWORD` and `MEGAWORD` are defined for convenience.
+
+To increase the depth of the stacks, change `DATA_STACK_DEPTH` and
+`RET_STACK_DEPTH` in sim.h
+
+Both of these changes require a recompile.
+
+## Why 'cowMachine'?
+
+Because I had µ (mu) stuck in my brain whilst thinking about
+microprocessors, so it got stuck with the name muPU.  If you read that
+out loud, and you're almost as childish as I am, you'll see a small
+issue with it. And so, it became the cowMachine.)
 
 ## License
 

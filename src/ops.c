@@ -6,13 +6,23 @@
 /* Non-opcode functions for manipulating stack. */
 static muword _pop(void){
      muword n1 = data_stack[ds_p];
-     ds_p = --ds_p;
+     if(ds_p > 0){
+	  ds_p = --ds_p;
+     } else {
+	  /* Attempt to pop from empty stack */
+	  crash(EUSTACK);
+     }
      return n1;
 }
 
 static void _push(muword val){
-     ds_p = ++ds_p;
-     data_stack[ds_p] = val;
+     if(ds_p < (DATA_STACK_DEPTH - 1)){
+	  ds_p = ++ds_p;
+	  data_stack[ds_p] = val;
+     } else {
+	  /* Attempt to push to full stack */
+	  crash(EOSTACK);
+     }
 }
 
 static muword _rpop(void){

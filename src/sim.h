@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define KILOWORD * 1024
-
+#define MEGAWORD * (KILOWORD * 1024)
 
 #define DATA_STACK_DEPTH 5
 #define RET_STACK_DEPTH 5

@@ -29,12 +29,12 @@ void _stackprint(void){
      if(ds_p < 0)
 	  return;
 
-     for(i=0; i < ds_p; i++)
+     for(i=0; i < ds_p+1; i++)
 	  fprintf(stderr, "\t%X", i);
      
      fprintf(stderr, "\n");
 
-     for(i=0; i < ds_p; i++)
+     for(i=0; i < ds_p+1; i++)
 	  fprintf(stderr, "\t%x", data_stack[i]);
 
      fprintf(stderr, "\n");

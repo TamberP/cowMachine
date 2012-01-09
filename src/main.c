@@ -115,7 +115,7 @@ int main(int argc, char **argv){
 
      while((status & S_CPU_RUN) > 0){
 	  _stackprint();
-	  fprintf(stderr, "PC: %x Opcode: %x TOS: %x\n", pc, prog_mem[pc], data_stack[(ds_p)]);
+	  fprintf(stderr, "PC: %x Opcode: %x DSp: %x RSp: %x TOS: %x\n", pc, prog_mem[pc], ds_p, rs_p, data_stack[(ds_p)]);
 	  decode(prog_mem[pc]);
 	  sleep(delay);
 	  pc = (pc + 1);

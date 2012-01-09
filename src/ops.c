@@ -18,8 +18,8 @@ static muword _pop(void){
 
 /* Push a word onto the stack. */
 static void _push(muword val){
-     data_stack[ds_p] = val;
      ds_p = (ds_p + 1);
+     data_stack[ds_p] = val;
 }
 
 

@@ -1,16 +1,22 @@
+/*
+  Opcode decoding and various simulator-related storages for cowMachine
+  Copyright (c) 2012  Tamber Penketh <tamber@furryhelix.co.uk>
+*/
+
 #include <stdio.h>
 #include <stdint.h>
-#include "err.h"
-#include "sim.h"
+
 #include "ops.h"
+#include "sim.h"
+#include "err.h"
 
 muword data_stack[DATA_STACK_DEPTH];
 muword ds_p; /* Data-stack pointer. (Index into data stack) */
 
 muword ret_stack[RET_STACK_DEPTH];
-muword rs_p; /* Return-stack pointer. (Index into return stack. ) */
+muword rs_p; /* Return-stack pointer. (Index into return stack) */
 
-muword prog_mem[PROG_MEMORY_SIZE];
+muword prog_mem[PROG_MEM_SIZE];
 
 /* Program counter */
 muword pc = 0;
@@ -63,16 +69,25 @@ void decode(muword opcode){
      case 0x0E:
 	  op_not();
 	  break;
-     case 0x0F:
-	  op_shl();
-	  break;
-     case 0x10:
-	  op_shr();
-	  break;
-     case 0xFF:
-	  op_stackprint();
-	  break;
      default:
 	  crash(EBADOP);
      }
+}
+
+void stop(void){
+     status &= ~S_CPU_RUN;
+     fprintf(stderr, "CPU halted\n");
+}
+
+void reset(void){
+     /* Clean up a little:
+	- Unset all flags.
+	- Empty stacks
+	- Return program-counter to 0
+     */
+     fprintf(stderr, "Initialising processor...\n");
+     status = 0;
+     pc     = 0;
+     rs_p   = 0;
+     ds_p   = 0;
 }

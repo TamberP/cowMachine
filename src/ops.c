@@ -1,151 +1,97 @@
-#include <stdio.h>
-#include <stdint.h>
+/* 
+   Implementation of op-codes for cowMachine.
+   Copyright (c) 2012 - Tamber Penketh <tamber@furryhelix.co.uk>
+*/
+
+#include "ops.h"
 #include "sim.h"
-#include "err.h"
 
-/* Non-opcode functions for manipulating stack. */
+/* Internal stack-management operations */
+
+/* Pop a word from the stack and return it */
 static muword _pop(void){
-     muword n1 = data_stack[ds_p];
-     if(ds_p > 0){
-	  ds_p = --ds_p;
-     } else {
-	  /* Attempt to pop from empty stack */
-	  crash(EUSTACK);
-     }
-     return n1;
+     muword val = data_stack[ds_p];
+     ds_p = (ds_p - 1);
+
+     return val;
 }
 
+/* Push a word onto the stack. */
 static void _push(muword val){
-     if(ds_p < (DATA_STACK_DEPTH - 1)){
-	  ds_p = ++ds_p;
-	  data_stack[ds_p] = val;
-     } else {
-	  /* Attempt to push to full stack */
-	  crash(EOSTACK);
-     }
+     data_stack[ds_p] = val;
+     ds_p = (ds_p + 1);
 }
 
-static muword _rpop(void){
-     rs_p = --rs_p;
-     return ret_stack[++rs_p];
-}
 
-static void _rpush(muword val){
-     ret_stack[rs_p] = val;
-     rs_p = ++rs_p;
-}
+/* Programmer-visible Opcodes */
 
-/* Opcode functions. */
-void op_push(void){
-     _push(prog_mem[pc + 1]);
-     pc = ++pc;
-}
+/*************************************************
+ * Control operations
+ ************************************************/
 
+/* Stop execution */
 void op_halt(void){
-     /* Stops execution on the processor. */
-     _stop();
+     stop();
 }
 
+/* Reset the processor */
+void op_reset(void){
+     reset();
+}
+
+/*************************************************
+ * Data operations
+ ************************************************/
+
+/* Store  !
+   (n1 addr -- )
+
+   Stores value n1 at location addr in program memory
+*/
 void op_store(void){
-     /* (n1 addr -- )
-	Stores value n1 at location addr in program memory.
-     */
-     prog_mem[_pop()] = _pop();
+     muword n1, addr;
+
+     addr = _pop();
+     n1 = _pop();
+
+     prog_mem[addr] = n1;
 }
 
+/* Fetch  @
+   (addr -- n1)
+
+   Retrieve the value from location addr in program memory
+*/
 void op_fetch(void){
-     /* (addr -- n1)
-	Fetch value from location addr in program memory.
-     */
      _push(prog_mem[_pop()]);
 }
 
-void op_add(void){
-     /* (n1 n2 -- (n1+n2))
-	Add n1 and n2. Push result.
-     */
-     _push(_pop() + _pop());
+/* Push
+   ( -- n1)
+   
+   Push the value from the next program memory cell onto the top of the
+   stack.
+ */
+
+void op_push(void){
+     _push(prog_mem[pc + 1]);
+     pc = (pc + 1);
 }
 
-void op_sub(void){
-     /*
-       (n1 n2 -- (n1 - n2))
-       Subtract n2 from n1. Push result.
-     */
-     _push((_pop() - _pop()));
-}
+/* Drop
+   ( n1 n2 -- n1 )
 
-void op_mult(void){
-     /*
-       (n1 n2 -- (n1 * n2))
-       Multiply n1 by n2
-     */
-     _push((_pop() * _pop()));
-}
-
-void op_div(void){
-     /*
-       (n1 n2 -- (n1 / n2))
-       Divide n1 by n2
-     */
-     _push((_pop() / _pop()));
-}
-
-void op_xor(void){
-     /*
-      (n1 n2 -- (n1 ^ n2))
-      Bitwise XOR of n1 and n2
-     */
-     _push((_pop() ^ _pop()));
-}
-
-void op_or(void){
-     /*
-       (n1 n2 -- (n1 | n2))
-       Bitwise OR of n1 and n2
-     */
-     _push((_pop() | _pop()));
-}
-
-void op_and(void){
-     /*
-       (n1 n2 -- (n1 & n2))
-       Bitwise AND of n1 and n2
-     */
-     _push((_pop() & _pop()));
-}
-
-void op_not(void){
-     /* BUG: This does not yet work, due to the NOT not working on
-      * muwords.
-
-	(n1  -- ~n1)
-	Bitwise NOT of the value on the TOS
-     */
-     /* _push((~_pop)); */
-}
-
+   Discard the item on the top of the stack
+*/
 void op_drop(void){
-     /* (n1 n2 -- n1)
-	Discard the value at the top of the stack.
-     */
      _pop();
 }
 
-void op_dup(void){
-     /*
-       (n1 -- n1 n1)
-       Duplicate value at TOS
-     */
-     muword t = _pop();
-     _push(t);
-     _push(t);
-}
+/* Over
+   ( n1 n2 -- n1 n2 n1 )
 
+*/
 void op_over(void){
-     /* (n1 n2 -- n1 n2 n1)
-	Duplicate value at second position on stack.
-     */
      muword n1, n2;
      n2 = _pop();
      n1 = _pop();
@@ -155,34 +101,110 @@ void op_over(void){
      _push(n1);
 }
 
-void op_shl(void){
-     /*
-       (n1 n2 -- (n1 << n2))
-       Shift n1 left by n2 places.
-     */
+/* Dup
+   ( n1 -- n1 n1)
+*/
+void op_dup(void){
+     muword n1 = _pop();
+
+     _push(n1);
+     _push(n1);
+}
+
+/*************************************************
+ * Mathematical operations
+ ************************************************/
+
+/* Add  +
+   ( n1 n2 -- (n1+n2) )
+
+   Add n1 to n2. Push the result onto the stack in their place.
+*/
+void op_add(void){
+     _push((_pop() + _pop()));
+}
+
+/* Subtract  -
+   ( n1 n2 -- (n1-n2) )
+
+   Subtract n2 from n1. Push the result.
+*/
+void op_sub(void){
+     _push((_pop() - _pop()));
+}
+
+/* Multiply  *
+   ( n1 n2 -- (n1*n2) )
+
+   Multiply n1 by n2.
+*/
+void op_mult(void){
+     _push((_pop() * _pop()));
+}
+
+/* Divide  /
+   ( n1 n2 -- (n1 / n2) )
+
+   Divide n1 by n2.
+*/
+void op_div(void){
+     _push((_pop() / _pop()));
+}
+
+/*************************************************
+ * Logical operations
+ ************************************************/
+
+/* XOR
+   ( n1 n2 -- (n1 ^ n2) )
+
+   Bitwise XOR of top two items on stack
+*/
+void op_xor(void){
+     _push((_pop() ^ _pop()));
+}
+
+/* OR
+   ( n1 n2 -- (n1 | n2) )
+
+   Bitwise OR of top two items on stack
+*/
+void op_or(void){
+     _push((_pop() | _pop()));
+}
+
+/* AND
+   ( n1 n2 -- (n1 & n2) )
+
+   Bitwise AND
+*/
+void op_and(void){
+     _push((_pop() & _pop()));
+}
+
+/* NOT
+   ( n1 -- ~n1 )
+
+   Bitwise NOT
+*/
+void op_not(void){
+     _push(~_pop());
+}
+
+/* Left shift
+   ( n1 n2 -- (n1 << n2) )
+
+   Left shift n1 by n2 places.
+*/
+void op_lsh(void){
      _push((_pop() << _pop()));
 }
 
-void op_shr(void){
-     /*
-	(n1 n2 -- (n1 >> n2 ))
-	Shift n1 right by n2 places.
-     */
+/* Right shift
+   ( n1 n2 -- (n1 >> n2) )
+
+   Right shift n1 by n2 places.
+*/
+void op_rsh(void){
      _push((_pop() >> _pop()));
-}
-
-void op_stackprint(void){
-     /*
-       Prints the stacks to STDOUT; does not manipulate stack in any
-       way.
-     */
-     int i;
-     printf("Data stack (current depth: %i):\n", (ds_p+1));
-     for(i=0; i < (ds_p+1); i++)
-	  printf("%i\t", i);
-
-     printf("\n");
-     for(i=0; i < (ds_p+1); i++)
-	  printf("%x\t", data_stack[i]);
-     printf("\n");
 }

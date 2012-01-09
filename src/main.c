@@ -27,22 +27,23 @@
 
 #include <errno.h>
 
+#include "err.h"
 #include "sim.h"
 #include "ops.h"
-#include "err.h"
 
 static void usage(char *us){
      fprintf(stderr, "usage: %s [-options ...]\n", us);
 
      fprintf(stderr, "Where options include:\n");
      fprintf(stderr, "\t-exec <filename>\t file to execute\n");
+     fprintf(stderr, "\t-delay <secs>\t Numbers of seconds to sleep between each instruction\n");
      exit(EXIT_FAILURE);
 }
 
 int main(int argc, char **argv){
      int i, ret, exe_fd;
      char *prog_name = NULL;
-     uint8_t exe_header[5];
+     uint8_t exe_header[5], delay = 0;
 
      for(i = 1; i < argc; i++){
 	  char *arg = argv[i];
@@ -53,6 +54,11 @@ int main(int argc, char **argv){
 		    /* -exec <filename> */
 		    if(++i >= argc) usage(argv[0]);
 		    prog_name = argv[i];
+		    continue;
+	       case 'd':
+		    /* -delay */
+		    if(++i >= argc) usage(argv[0]);
+		    delay = atoi(argv[i]);
 		    continue;
 	       default:
 		    usage(argv[0]);
@@ -91,22 +97,14 @@ int main(int argc, char **argv){
 	  abort();
      }
 
-     /* Clean up a little:
-	- Unset all flags.
-	- Empty stacks
-	- Return program-counter to 0
-      */
-     fprintf(stderr, "Initialising processor...\n");
-     status = 0;
-     pc     = 0;
-     rs_p   = 0;
-     ds_p   = 0;
+     reset();
 
      /* Load program into memory */
-     if((ret = (int) read(exe_fd, prog_mem, (PROG_MEMORY_SIZE - 1))) < 0){
+     if((ret = (int) read(exe_fd, prog_mem, (PROG_MEM_SIZE - 1))) < 0){
 	  perror("Could not read program into program memory");
 	  exit(EXIT_FAILURE);
      }
+     prog_mem[ret+1] = 0x00;
 
      /* We don't need to hold the file open now that the executable is
       * entirely in the program memory. */
@@ -116,9 +114,11 @@ int main(int argc, char **argv){
      status |= S_CPU_RUN;
 
      while((status & S_CPU_RUN) > 0){
+	  _stackprint();
 	  fprintf(stderr, "PC: %x Opcode: %x TOS: %x\n", pc, prog_mem[pc], data_stack[(ds_p)]);
 	  decode(prog_mem[pc]);
-	  pc = ++pc;
+	  sleep(delay);
+	  pc = (pc + 1);
      }
 
      exit(EXIT_SUCCESS);

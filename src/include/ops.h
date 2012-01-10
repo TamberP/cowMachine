@@ -11,6 +11,12 @@ void op_halt(void);    /* Stop execution */
 
 void op_reset(void);   /* Reset the processor */
 
+void op_call(void);    /* Jump to a function */
+
+void op_ret(void);     /* Return from a function. */
+
+void op_if(void);      /* Branch if TOS == 0 */
+
 /*************************************************
  * Data operations
  ************************************************/

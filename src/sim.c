@@ -75,6 +75,21 @@ void decode(muword opcode){
      case 0x10:
 	  op_rsh();
 	  break;
+     case 0x11:
+	  op_if();
+	  break;
+     case 0x12:
+	  op_call();
+	  break;
+     case 0x13:
+	  op_ret();
+	  break;
+     case 0xFE:
+	  /* Function 'opcode'. This is a non-op, used purely to mark
+	   * the beginning of a function; and so that we can jump
+	   * straight to the function and begin execution as soon as
+	   * the PC ticks upward as normal */
+	  break;
      default:
 	  crash(EBADOP);
      }

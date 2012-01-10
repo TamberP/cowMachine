@@ -22,6 +22,17 @@ static void _push(muword val){
      data_stack[ds_p] = val;
 }
 
+static muword _rpop(void){
+     muword val = ret_stack[rs_p];
+     rs_p = (rs_p - 1);
+
+     return val;
+}
+
+static void _rpush(muword val){
+     rs_p = (rs_p + 1);
+     ret_stack[ds_p] = val;
+}
 
 /* Programmer-visible Opcodes */
 
@@ -37,6 +48,33 @@ void op_halt(void){
 /* Reset the processor */
 void op_reset(void){
      reset();
+}
+
+/* Jump to a function */
+void op_call(void){
+     /* Save the address we're jumping to */
+     muword jmp = prog_mem[(pc + 1)];
+
+     /* Push the address of the next instruction onto the return
+      * stack; so we return where we left off. */
+     _rpush((pc + 2));
+
+     /* Jump to the function's opcode. The function's executable code
+      * starts the instruction after this, since the PC will be
+      * incremented after this opcode ends. */
+     pc = jmp;
+}
+
+/* Return to whence we came. */
+void op_ret(void){
+     pc = _rpop();
+}
+
+
+/* Conditional operation.  If the current top of the stack is 0, then
+   jump to the value encoded in the second half of the two-word
+   instruction; otherwise, continue as normal.  */
+void op_if(void){
 }
 
 /*************************************************

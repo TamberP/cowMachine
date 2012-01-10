@@ -8,8 +8,8 @@
 #include "sim.h"
 #include "err.h"
 
-static void _errmsg(errno){
-  switch(errno){
+static void _errmsg(muword errid){
+  switch(errid){
   case EBADOP:
     fprintf(stderr, "Bad operation\n");
     break;
@@ -42,7 +42,7 @@ void _stackprint(void){
      fprintf(stderr, "\n");
 }
 
-void crash(muword errno){
-     _errmsg(errno);
+void crash(muword errid){
+     _errmsg(errid);
      stop();
 }

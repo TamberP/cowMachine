@@ -1,4 +1,4 @@
-CFLAGS:=-std=c89 -Wall -pedantic -g -I./include
+CFLAGS:=-std=c89 -Wall -Wextra -pedantic -g -I./include
 LINT:=splint
 LINT_OPTS:=
 

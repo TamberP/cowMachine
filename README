@@ -196,6 +196,16 @@ Bitwise AND of the top two values on DS
 
 Bitwise NOT of the top value on the stack.
 
+### 0x0F LSH
+    ( n1 n2 -- (n1 << n2) )
+
+Logical left shift
+
+### 0x10 RSH
+    ( n1 n2 -- (n1 >> n2) )
+
+Logical right shift
+
 # Not yet implemented (TODO list)
 
 * Conditionals

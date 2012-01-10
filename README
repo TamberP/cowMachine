@@ -12,7 +12,8 @@ It is designed to be relatively easy to experiment with, and tweak.
 The word-width of the 'machine' is adjustable by choosing a different
 make target.
 
-By default, the word-width is 8 bits.
+By default, the word-width is 8 bits. To change this, use the
+corresponding argument to make:
 
     8-bit  - make
     16-bit - make 16
@@ -52,6 +53,26 @@ DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
 PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
 TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.
+
+# Building the cowMachine
+
+Building the cowMachine, with GCC and GNU Make, is simply a matter of
+typing `make` (or `gmake`).
+
+So far, the makefile relies on `gcc` existing. I'll get around to
+fixing this to be more considerate of other platforms eventually.
+
+The cowMachine has been tested on:
+
+* amd64 Linux 3.1.4, Binutils 2.21.1, with GCC 4.5.3
+* amd64 FreeBSD 8.2-RELEASE, GCC 4.2.1
+
+Theoretically, it should build on any POSIX platform with a c89
+compiler. (Including Windows, if you use MinGW.)
+
+Reports of disasters occurring on other platforms, with core files,
+etc as appropriate welcomed; patches to fix said disasters even more
+welcome!
 
 # Programming the cowMachine
 

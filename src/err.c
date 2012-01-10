@@ -26,8 +26,10 @@ static void _errmsg(errno){
 
 void _stackprint(void){
      muword i;
-     if(ds_p < 0)
+     if(ds_p == 0){
+	  fprintf(stderr, "\tData stack empty.\n");
 	  return;
+     }
 
      for(i=0; i < ds_p+1; i++)
 	  fprintf(stderr, "\t%X", i);

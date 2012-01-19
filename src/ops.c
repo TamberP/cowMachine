@@ -71,10 +71,184 @@ void op_ret(void){
 }
 
 
-/* Conditional operation.  If the current top of the stack is 0, then
-   jump to the value encoded in the second half of the two-word
-   instruction; otherwise, continue as normal.  */
+/* Conditional operation.  If the current top of the stack is greater
+   than 0, then jump to the value encoded in the second half of the
+   two-word instruction; otherwise, continue as normal.  */
 void op_if(void){
+     if(1 > _pop())
+	  pc = (pc + 1); /* Skip the jump instruction. */
+}
+
+/*************************************************
+ * Comparison operations
+ ************************************************/
+
+/* = ( n1 n2  -- flag )
+   True if n1 == n2
+ */
+
+void cmp_eq(void){
+     if((_pop() == _pop()))
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* <> ( n1 n2 -- flag )
+   True if n1 != n2
+*/
+void cmp_neq(void){
+     if((_pop() != _pop()))
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* < ( n1 n2 -- flag )
+   True if n1 < n2 (Signed)
+*/
+
+void cmp_lt(void){
+     if((smuword) _pop() < (smuword) _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* <u ( n1 n2 -- flag )
+   True if n1 < n2 (unsigned)
+*/
+
+void cmp_ult(void){
+     if(_pop() < _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* > ( n1 n2 -- flag )
+   True if n1 > n2 (signed)
+*/
+
+void cmp_gt(void){
+     if((smuword) _pop() > (smuword) _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* >u ( n1 n2 -- flag )
+   True if n1 > n2 (unsigned)
+*/
+
+void cmp_ugt(void){
+     if(_pop() > _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* 0= ( n -- flag )
+   True if n == 0
+*/
+
+void cmp_eq0(void){
+     if(0 == _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* 0<> ( n -- flag )
+   True if n != 0
+*/
+
+void cmp_neq0(void){
+     if(0 != _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* 0< ( n -- flag )
+   True if n is less than 0
+*/
+
+void cmp_lt0(void){
+     if(0 > (smuword) _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* u0> ( n -- flag )
+   True if n is greater than 0. (Unsigned)
+*/
+
+void cmp_ugt0(void){
+     if(0 < _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* 0> ( n -- flag )
+   True if n is greater than 0. (signed)
+*/
+
+void cmp_gt0(void){
+     if(0 < (smuword) _pop())
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* True ( -- flag )
+   Pushes a true value onto the stack
+*/
+
+void cmp_true(void){
+     _push(1);
+}
+
+/* False ( -- flag )
+   Pushes a false value onto the stack
+*/
+
+void cmp_false(void){
+     _push(0);
+}
+
+/* Between ( n low high -- flag )
+   True if low <= n <= high
+*/
+
+void cmp_between(void){
+     muword u, low, high;
+     u = _pop();
+     low = _pop();
+     high = _pop();
+
+     if((low <= u) && (u <= high))
+	  _push(1);
+     else
+	  _push(0);
+}
+
+/* Within  ( n low high -- flag )
+   True if low <= u < high
+*/
+
+void cmp_within(void){
+     muword u, low, high;
+     u = _pop();
+     low = _pop();
+     high = _pop();
+
+     if((low <= u) && (u < high))
+	  _push(1);
+     else
+	  _push(0);
 }
 
 /*************************************************
@@ -82,9 +256,9 @@ void op_if(void){
  ************************************************/
 
 /* Store  !
-   (n1 addr -- )
+   (u addr -- )
 
-   Stores value n1 at location addr in program memory
+   Stores value u at location addr in program memory
 */
 void op_store(void){
      muword n1, addr;

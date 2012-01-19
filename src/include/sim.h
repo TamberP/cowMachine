@@ -17,12 +17,16 @@ enum {
 
 #if defined(COW_16_BITS)
      typedef uint16_t muword;
+     typedef int16_t smuword;
 #elif defined(COW_32_BITS)
      typedef unint32_t muword;
+     typedef int32_t smuword;
 #elif defined(COW_64_BITS)
      typedef uint64_t muword;
+     typedef int64_t smuword;
 #else
      typedef uint8_t muword;
+     typedef int8_t smuword;
 #endif
 
 extern muword data_stack[DATA_STACK_DEPTH];

@@ -75,10 +75,10 @@ void decode(muword opcode){
      case 0x0F:
 	  op_if();
 	  break;
-     case 0x12:
+     case 0x10:
 	  op_call();
 	  break;
-     case 0x13:
+     case 0x11:
 	  op_ret();
 	  break;
      default:

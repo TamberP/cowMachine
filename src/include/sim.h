@@ -8,8 +8,9 @@
 
 #define DATA_STACK_DEPTH 5
 #define RET_STACK_DEPTH  5
+#define INTR_STACK_DEPTH 5
 
-#define PROG_MEM_SIZE  (512 KILOWORD)
+#define MAIN_MEM_SIZE  (512 KILOWORD)
 
 enum {
      S_CPU_RUN = 0x01
@@ -29,15 +30,30 @@ enum {
      typedef int8_t smuword;
 #endif
 
-extern muword data_stack[DATA_STACK_DEPTH];
-extern muword ret_stack[RET_STACK_DEPTH];
-extern muword prog_mem[PROG_MEM_SIZE];
+/* Data stack. Used by most operations as working space, and for
+ * transferring arguments and returning results. */
+extern muword data_stack[(DATA_STACK_DEPTH + 1)];
 
-/* Program counter, data-stack pointer, return-stack pointer, 
- * status register */
-extern muword pc, ds_p, rs_p, status;
-  
-void stop(void);
+/* Return stack. Return addresses are pushed onto this as part of a
+ * CALL. Can also be used, carefully, as extra working space. */
+extern muword ret_stack[(RET_STACK_DEPTH + 1)];
+
+/* Interrupt stack. Used to transfer arguments into and out of
+ * interrupt handlers. */
+extern muword int_stack[(INTR_STACK_DEPTH + 1)];
+
+/* Main memory. Contains program code, stored data, memory-mapped I/O,
+ * etc. */
+extern muword main_mem[MAIN_MEM_SIZE];
+
+/* ** Registers ** */
+extern muword pc;   /* Program counter */
+extern muword ds_p; /* Data-stack pointer. */
+extern muword rs_p; /* Return-stack pointer. */
+extern muword is_p; /* Interrupt-stack pointer. */
+extern muword status; /* Control/status register */
+
+void halt(void);
 void reset(void);
 void decode(muword opcode);
 

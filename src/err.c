@@ -12,38 +12,33 @@
 static void _errmsg(muword errid){
   switch(errid){
   case EBADOP:
-    fprintf(stderr, "Bad operation\n");
-    break;
+       fprintf(stderr, "Bad operation\n");
+       break;
   case EUSTACK:
-    fprintf(stderr, "Stack underflow\n");
-    break;
+       fprintf(stderr, "Stack underflow\n");
+       break;
   case EOSTACK:
-    fprintf(stderr, "Stack overflow\n");
-    break;
+       fprintf(stderr, "Stack overflow\n");
+       break;
+  case E_MCE:
+       fprintf(stderr, "Machine-check exception.\n");
+       break;
   default:
-    fprintf(stderr, "!! TILT !!");
+    fprintf(stderr, "!! TILT !!\n");
   }
 }
 
 void _stackprint(void){
      muword i;
-     if(ds_p == 0){
-	  fprintf(stderr, "\tData stack empty.\n");
-	  return;
+
+     fprintf(stderr, "Element #\tData stack\tReturn Stack\tInterrupt Stack\n");
+     for(i = 1; i < DATA_STACK_DEPTH; i++){
+	  fprintf(stderr, "%x\t\t%x\t\t%x\t\t%x\n", i, data_stack[i], ret_stack[i], int_stack[i]);
      }
-
-     for(i=0; i < ds_p+1; i++)
-	  fprintf(stderr, "\t%X", i);
-     
-     fprintf(stderr, "\n");
-
-     for(i=0; i < ds_p+1; i++)
-	  fprintf(stderr, "\t%x", data_stack[i]);
-
      fprintf(stderr, "\n");
 }
 
 void crash(muword errid){
      _errmsg(errid);
-     abort();
+     halt();
 }

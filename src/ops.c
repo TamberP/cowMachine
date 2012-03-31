@@ -5,33 +5,56 @@
 
 #include "ops.h"
 #include "sim.h"
+#include "irq.h"
 
 /* Internal stack-management operations */
 
 /* Pop a word from the stack and return it */
 static muword _pop(void){
-     muword val = data_stack[ds_p];
-     ds_p = (ds_p - 1);
-
-     return val;
+     muword val;
+     if(ds_p != 0){
+	  ds_p = (ds_p - 1);
+	  val = data_stack[(ds_p + 1)];
+	  data_stack[(ds_p + 1)] = 0; /* Clean the old value, for neatness in stack-monitoring display */
+	  return val;
+     } else {
+	  interrupt(IRQ_STACK_UNDER);
+     }
+     return 0;
 }
 
 /* Push a word onto the stack. */
 static void _push(muword val){
-     ds_p = (ds_p + 1);
-     data_stack[ds_p] = val;
+     if(ds_p < DATA_STACK_DEPTH){
+	  ds_p = (ds_p + 1);
+	  data_stack[ds_p] = val;
+     } else {
+	  _is_push('d');
+	  _is_push('o');
+	  interrupt(IRQ_STACK_OVER);
+     }
 }
 
 static muword _rpop(void){
-     muword val = ret_stack[rs_p];
-     rs_p = (rs_p - 1);
-
-     return val;
+     muword val;
+     if(rs_p != 0){
+	  rs_p = (rs_p - 1);
+	  val = ret_stack[(rs_p + 1)];
+	  ret_stack[(rs_p + 1)] = 0; /* Clean old value */
+	  return val;
+     } else {
+	  interrupt(IRQ_STACK_UNDER);
+     }
+     return 0;
 }
 
 static void _rpush(muword val){
-     rs_p = (rs_p + 1);
-     ret_stack[ds_p] = val;
+     if(rs_p < RET_STACK_DEPTH){
+	  rs_p = (rs_p + 1);
+	  ret_stack[rs_p] = val;
+     } else {
+	  interrupt(IRQ_STACK_OVER);
+     }
 }
 
 /* Programmer-visible Opcodes */
@@ -42,7 +65,7 @@ static void _rpush(muword val){
 
 /* Stop execution */
 void op_halt(void){
-     stop();
+     halt();
 }
 
 /* Reset the processor */
@@ -53,7 +76,7 @@ void op_reset(void){
 /* Jump to a function */
 void op_call(void){
      /* Save the address we're jumping to */
-     muword jmp = prog_mem[(pc + 1)];
+     muword jmp = main_mem[(pc + 1)];
 
      /* Push the address of the next instruction onto the return
       * stack; so we return where we left off. */
@@ -266,7 +289,7 @@ void op_store(void){
      addr = _pop();
      n1 = _pop();
 
-     prog_mem[addr] = n1;
+     main_mem[addr] = n1;
 }
 
 /* Fetch  @
@@ -275,18 +298,18 @@ void op_store(void){
    Retrieve the value from location addr in program memory
 */
 void op_fetch(void){
-     _push(prog_mem[_pop()]);
+     _push(main_mem[_pop()]);
 }
 
 /* Push
    ( -- n1)
-   
+
    Push the value from the next program memory cell onto the top of the
    stack.
  */
 
 void op_push(void){
-     _push(prog_mem[pc + 1]);
+     _push(main_mem[pc + 1]);
      pc = (pc + 1);
 }
 

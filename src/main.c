@@ -93,18 +93,18 @@ int main(int argc, char **argv){
 	       exit(EXIT_FAILURE);
 	  }
      } else {
-	  /* TODO: Use a small internal test program */
-	  abort();
+	  fprintf(stderr, "Firmware must be provided. TODO: Built-in self-test firmware.\n");
+	  exit(EXIT_FAILURE);
      }
 
      reset();
 
      /* Load program into memory */
-     if((ret = (int) read(exe_fd, prog_mem, (PROG_MEM_SIZE - 1))) < 0){
+     if((ret = (int) read(exe_fd, main_mem, (MAIN_MEM_SIZE - 1))) < 0){
 	  perror("Could not read program into program memory");
 	  exit(EXIT_FAILURE);
      }
-     prog_mem[ret+1] = 0x00;
+     main_mem[ret+1] = 0x00;
 
      /* We don't need to hold the file open now that the executable is
       * entirely in the program memory. */
@@ -115,8 +115,8 @@ int main(int argc, char **argv){
 
      while((status & S_CPU_RUN) > 0){
 	  _stackprint();
-	  fprintf(stderr, "PC: %x Opcode: %x DSp: %x RSp: %x TOS: %x\n", pc, prog_mem[pc], ds_p, rs_p, data_stack[(ds_p)]);
-	  decode(prog_mem[pc]);
+	  fprintf(stderr, "PC: %x Opcode: %x DSp: %x RSp: %x TOS: %x\n", pc, main_mem[pc], ds_p, rs_p, data_stack[(ds_p)]);
+	  decode(main_mem[pc]);
 	  sleep(delay);
 	  pc = (pc + 1);
      }

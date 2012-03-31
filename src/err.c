@@ -4,6 +4,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "sim.h"
 #include "err.h"
@@ -44,5 +45,5 @@ void _stackprint(void){
 
 void crash(muword errid){
      _errmsg(errid);
-     stop();
+     abort();
 }

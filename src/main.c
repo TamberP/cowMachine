@@ -89,7 +89,7 @@ int main(int argc, char **argv){
 	  }
 	  if(exe_header[2] != (sizeof(muword)*8)){
 	       fprintf(stderr, "Word length mismatch; %s created for a %d-bit cowMachine, this machine has %lu bits.\n",
-		       prog_name, exe_header[2], (sizeof(muword)*8));
+		       prog_name, exe_header[2], (unsigned long)(sizeof(muword)*8));
 	       exit(EXIT_FAILURE);
 	  }
      } else {

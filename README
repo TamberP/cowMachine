@@ -61,11 +61,14 @@ typing `make` (or `gmake`).
 
 So far, the makefile relies on `gcc` existing. I'll get around to
 fixing this to be more considerate of other platforms eventually.
+Reports of how well it compiles under other compilers and platforms
+(And patches, for strangeness, if possible) are very welcome.
 
 The cowMachine has been tested on:
 
 * amd64 Linux 3.1.4, Binutils 2.21.1, with GCC 4.5.3
 * amd64 FreeBSD 8.2-RELEASE, GCC 4.2.1
+* i386 Solaris (OpenIndiana) oi_151a3, GCC 3.4.3 (csl-sol210-3_4-20050802)
 
 Theoretically, it should build on any POSIX platform with a c89
 compiler. (Including Windows, if you use MinGW.)
@@ -76,8 +79,9 @@ welcome!
 
 # Programming the cowMachine
 
-  The cowMachine's instruction format is based on Forth; and should be
-relatively easy to program, if you know that meta-language.
+  The cowMachine's instruction format is very simple, theoretically
+based on Forth; and should be easy to understand if you know that
+meta-language.
 
 The Forth program needs to be converted into binary format to be
 executable on the cowMachine; a process that, so far, has to be done
@@ -91,7 +95,8 @@ you want to execute; which is loaded into the program memory. Nothing
 more.
 
 To create an executable format file, which is loaded into the
-cowMachine by running ./cm -e <path to executable>, one needs to:
+cowMachine by running ./cm -e <path to executable> (or
+./cm.<wordwidth>, if you're using a larger cow), one needs to:
 
 1. Add the 4 byte header to the file.
 2. Manually convert/assemble your Forth to the binary format.
@@ -108,7 +113,7 @@ The header format is as follows:
 
     2 octets - signature - 0x4D 0x55 ("MU")
     1 octet  - target word length
-    0x00 as padding.
+    1 octet  - 0x00 as padding.
 
 The signature, 'MU', is required; or the loading mechanism will reject
 the file.
@@ -222,10 +227,7 @@ Logical right shift of top value on stack
 
 # Not yet implemented (TODO list)
 
-* Conditionals
-* Branching/returning
-* A bunch of error checking
-* Any method of communicating with the outside world
+See ./TODO.
 
 # Bugs
 

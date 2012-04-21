@@ -189,43 +189,36 @@ Duplicate the value currently at the top of the stack.
 Duplicate the value currently at #2 on the stack to the top of the
 stack.
 
-### 0x09 mult
+### 0x09 xor
 
-    * (n1 n2 -- (n1 * n2))
+Bitwise XOR of the top two values on data stack
 
-Multiply the top two values from the data stack together.
 
-### 0x0A div
-    / (n1 n2 -- (n1 / n2))
+### 0x0A or
 
-Divide the value at #2 on the stack by the value at the top of the
-stack.
+Bitwise OR of top two values on data stack
 
-### 0x0B xor
+### 0x0B and
 
-Bitwise XOR of the top two values on the stack
+Bitwise AND of the top two values on the stack
 
-### 0x0C OR
+### 0x0C NOT
 
-Bitwise OR of the top two values on the stack
+Bitwise NOT of the top two values on the stack
 
-### 0x0D AND
-
-Bitwise AND of the top two values on DS
-
-### 0x0E NOT
-
-Bitwise NOT of the top value on the stack.
-
-### 0x0F LSH
+### 0x0D LSH
     ( n1 n2 -- (n1 << n2) )
 
-Logical left shift
+Logical left shift of top value on stack
 
-### 0x10 RSH
+### 0x0E RSH
     ( n1 n2 -- (n1 >> n2) )
 
-Logical right shift
+Logical right shift of top value on stack
+
+### 0x0F IF
+### 0x10 CALL
+### 0x11 RET
 
 # Not yet implemented (TODO list)
 

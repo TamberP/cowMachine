@@ -4,6 +4,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "sim.h"
 #include "err.h"
@@ -11,16 +12,19 @@
 static void _errmsg(muword errid){
   switch(errid){
   case EBADOP:
-    fprintf(stderr, "Bad operation\n");
-    break;
+       fprintf(stderr, "Bad operation\n");
+       break;
   case EUSTACK:
-    fprintf(stderr, "Stack underflow\n");
-    break;
+       fprintf(stderr, "Stack underflow\n");
+       break;
   case EOSTACK:
-    fprintf(stderr, "Stack overflow\n");
-    break;
+       fprintf(stderr, "Stack overflow\n");
+       break;
+  case E_MCE:
+       fprintf(stderr, "Machine-check exception.\n");
+       break;
   default:
-    fprintf(stderr, "!! TILT !!");
+    fprintf(stderr, "!! TILT !!\n");
   }
 }
 
@@ -37,10 +41,18 @@ void _stackprint(void){
      for(i = 0; i < RET_STACK_DEPTH; i++){
 	  fprintf(stderr, "%x\t", ret_stack[i]);
      }
+
+     fprintf(stderr, "\n");
+
+     fprintf(stderr, "Interrupt stack:\t");
+     for(i = 0; i < INTR_STACK_DEPTH; i++){
+	  fprintf(stderr, "%x\t", int_stack[i]);
+     }
+
      fprintf(stderr, "\n");
 }
 
 void crash(muword errid){
      _errmsg(errid);
-     stop();
+     halt();
 }

@@ -6,7 +6,8 @@
 enum {
      EBADOP = 0x01, /* Bad op-code */
      EUSTACK,
-     EOSTACK
+     EOSTACK,
+     E_MCE
 };
 
 void crash(muword errno);

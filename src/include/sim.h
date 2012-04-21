@@ -36,7 +36,8 @@ extern muword prog_mem[PROG_MEM_SIZE];
 /* Program counter, data-stack pointer, return-stack pointer, 
  * status register */
 extern muword pc, ds_p, rs_p, status;
-  
+extern char *ops[18];
+
 void stop(void);
 void reset(void);
 void decode(muword opcode);

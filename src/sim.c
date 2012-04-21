@@ -23,6 +23,12 @@ muword pc = 0;
 
 muword status;
 
+/* Used for pretty-printing operations when debugging. Yes, it's
+ * repetition and will probably fall out of sync when/if I change op
+ * orders again. */
+char *ops[18] = {"HALT", "STORE", "FETCH", "PUSH", "ADD", "SUB", "DROP", "DUP", "OVER",
+		 "XOR",  "OR", "AND", "NOT", "LSH", "RSH", "IF", "CALL", "RET"};
+
 void decode(muword opcode){
      switch(opcode){
      case 0x00:

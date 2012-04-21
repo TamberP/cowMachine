@@ -26,19 +26,17 @@ static void _errmsg(muword errid){
 
 void _stackprint(void){
      muword i;
-     if(ds_p == 0){
-	  fprintf(stderr, "\tData stack empty.\n");
-	  return;
-     }
 
-     for(i=0; i < ds_p+1; i++)
-	  fprintf(stderr, "\t%X", i);
-     
+     fprintf(stderr, "Data stack:\t\t");
+     for(i = 0; i < DATA_STACK_DEPTH; i++){
+	  fprintf(stderr, "%x\t", data_stack[i]);
+     }
      fprintf(stderr, "\n");
 
-     for(i=0; i < ds_p+1; i++)
-	  fprintf(stderr, "\t%x", data_stack[i]);
-
+     fprintf(stderr, "Return stack:\t\t");
+     for(i = 0; i < RET_STACK_DEPTH; i++){
+	  fprintf(stderr, "%x\t", ret_stack[i]);
+     }
      fprintf(stderr, "\n");
 }
 

@@ -12,22 +12,22 @@
 /* Pop a word from the stack and return it */
 static muword _pop(void){
      muword val;
-     if(ds_p != 0){
-	  ds_p = (ds_p - 1);
-	  val = data_stack[(ds_p + 1)];
-	  data_stack[(ds_p + 1)] = 0; /* Clean the old value, for neatness in stack-monitoring display */
-	  return val;
-     } else {
+     if(ds_p == 0){
 	  interrupt(IRQ_STACK_UNDER);
+	  return 0; /* This is just to shut the compiler up; by default, the stack-underflow stops execution. */
+     } else {
+	  ds_p = ds_p - 1;
+	  val = data_stack[ds_p];
+	  data_stack[ds_p] = 0; /* Clean up a little, to make the stack-print easier to read. */
+	  return val;
      }
-     return 0;
 }
 
 /* Push a word onto the stack. */
 static void _push(muword val){
      if(ds_p < DATA_STACK_DEPTH){
-	  ds_p = (ds_p + 1);
 	  data_stack[ds_p] = val;
+	  ds_p = (ds_p + 1);
      } else {
 	  _is_push('d');
 	  _is_push('o');
@@ -37,21 +37,21 @@ static void _push(muword val){
 
 static muword _rpop(void){
      muword val;
-     if(rs_p != 0){
-	  rs_p = (rs_p - 1);
-	  val = ret_stack[(rs_p + 1)];
-	  ret_stack[(rs_p + 1)] = 0; /* Clean old value */
-	  return val;
-     } else {
+     if(rs_p == 0){
 	  interrupt(IRQ_STACK_UNDER);
+	  return 0;
+     } else {
+	  rs_p = rs_p - 1;
+	  val = ret_stack[rs_p];
+	  ret_stack[rs_p] = 0;
+	  return val;
      }
-     return 0;
 }
 
 static void _rpush(muword val){
      if(rs_p < RET_STACK_DEPTH){
-	  rs_p = (rs_p + 1);
 	  ret_stack[rs_p] = val;
+	  rs_p = (rs_p + 1);
      } else {
 	  interrupt(IRQ_STACK_OVER);
      }

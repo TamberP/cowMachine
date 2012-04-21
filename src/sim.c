@@ -10,9 +10,9 @@
 #include <string.h>
 
 /* Stacks */
-muword data_stack[(DATA_STACK_DEPTH + 1)];
-muword ret_stack[(RET_STACK_DEPTH + 1)];
-muword int_stack[(INTR_STACK_DEPTH + 1)];
+muword data_stack[DATA_STACK_DEPTH];
+muword ret_stack[RET_STACK_DEPTH];
+muword int_stack[INTR_STACK_DEPTH];
 
 /* Registers */
 muword ds_p = 0;   /* Index into data stack. */
@@ -23,6 +23,12 @@ muword status = 0; /* Control/Status register */
 
 /* Program memory */
 muword main_mem[MAIN_MEM_SIZE];
+
+/* Used for pretty-printing operations when debugging. Yes, it's
+ * repetition and will probably fall out of sync when/if I change op
+ * orders again. */
+char *ops[18] = {"HALT", "STORE", "FETCH", "PUSH", "ADD", "SUB", "DROP", "DUP", "OVER",
+	       "XOR",  "OR", "AND", "NOT", "LSH", "RSH", "IF", "CALL", "RET"};
 
 /* 'decode' the current instruction and execute its operation */
 void decode(muword opcode){

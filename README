@@ -23,11 +23,11 @@ corresponding argument to make:
 As standard, the cowMachine has 512 kilowords of program memory; and
 stacks 5 deep. Both of these can be changed very easily:
 
-To increase the amount of memory available, change `PROG_MEM_SIZE`
+To increase the amount of memory available, change `MAIN_MEM_SIZE`
 in sim.h. `KILOWORD` and `MEGAWORD` are defined for convenience.
 
-To increase the depth of the stacks, change `DATA_STACK_DEPTH` and
-`RET_STACK_DEPTH` in sim.h
+To increase the depth of the stacks, change `DATA_STACK_DEPTH`,
+`RET_STACK_DEPTH` and `INTR_STACK_DEPTH` in sim.h
 
 Both of these changes require a recompile.
 

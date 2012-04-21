@@ -46,7 +46,7 @@ static muword _rpop(void){
 }
 
 static void _rpush(muword val){
-     ret_stack[ds_p] = val;
+     ret_stack[rs_p] = val;
      rs_p = (rs_p + 1);
 }
 

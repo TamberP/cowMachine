@@ -53,6 +53,8 @@ extern muword rs_p; /* Return-stack pointer. */
 extern muword is_p; /* Interrupt-stack pointer. */
 extern muword status; /* Control/status register */
 
+extern char *ops[18];
+
 void halt(void);
 void reset(void);
 void decode(muword opcode);

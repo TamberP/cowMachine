@@ -1,0 +1,10 @@
+# Hardware
+* Serial port
+* Busses and connections thereto.
+* Memory mapping?
+
+# Processor Internal
+* 'If' branching
+
+# Tooling/etc
+* An assembler/compiler

@@ -31,9 +31,21 @@ static void _errmsg(muword errid){
 void _stackprint(void){
      muword i;
 
-     fprintf(stderr, "Element #\tData stack\tReturn Stack\tInterrupt Stack\n");
-     for(i = 1; i < DATA_STACK_DEPTH; i++){
-	  fprintf(stderr, "%x\t\t%x\t\t%x\t\t%x\n", i, data_stack[i], ret_stack[i], int_stack[i]);
+     fprintf(stderr, "Data stack:\t\t");
+     for(i = 0; i < DATA_STACK_DEPTH; i++){
+	  fprintf(stderr, "%x\t", data_stack[i]);
+     }
+     fprintf(stderr, "\n");
+
+     fprintf(stderr, "Return stack:\t\t");
+     for(i = 0; i < RET_STACK_DEPTH; i++){
+	  fprintf(stderr, "%x\t", ret_stack[i]);
+     }
+     fprintf(stderr, "\n");
+
+     fprintf(stderr, "Interrupt stack:\t");
+     for(i = 0; i < INTR_STACK_DEPTH; i++){
+	  fprintf(stderr, "%x\t", int_stack[i]);
      }
      fprintf(stderr, "\n");
 }

@@ -1,5 +1,13 @@
-# Hardware
-* Serial port
+# Code
+* More error-checking
+* Tests
+
+# 'Hardware'
+* I/O
+  + Serial port
+  + Discs
+* Co-processors
+  + FPU
 * Busses and connections thereto.
 * Memory mapping?
 

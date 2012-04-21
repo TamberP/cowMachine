@@ -10,28 +10,40 @@
 
 /* Pop a word from the stack and return it */
 static muword _pop(void){
-     muword val = data_stack[ds_p];
-     ds_p = (ds_p - 1);
-
-     return val;
+     muword val;
+     if(0 == ds_p){
+	  /* Stack underflow. */
+	  return 0;
+     } else {
+	  ds_p = ds_p - 1;
+	  val = data_stack[ds_p];
+	  data_stack[ds_p] = 0; /* Clean up a little bit, to make the stack print easier to read. */
+	  return val;
+     }
 }
 
 /* Push a word onto the stack. */
 static void _push(muword val){
-     ds_p = (ds_p + 1);
      data_stack[ds_p] = val;
+     ds_p = (ds_p + 1);
 }
 
 static muword _rpop(void){
-     muword val = ret_stack[rs_p];
-     rs_p = (rs_p - 1);
-
-     return val;
+     muword val;
+     if(0 == rs_p){
+	  /* Stack underflow */
+	  return 0;
+     } else {
+	  rs_p = (rs_p - 1);
+	  val = ret_stack[rs_p];
+	  ret_stack[ds_p] = 0;
+	  return val;
+     }
 }
 
 static void _rpush(muword val){
-     rs_p = (rs_p + 1);
      ret_stack[ds_p] = val;
+     rs_p = (rs_p + 1);
 }
 
 /* Programmer-visible Opcodes */

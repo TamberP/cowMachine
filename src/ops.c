@@ -24,8 +24,12 @@ static muword _pop(void){
 
 /* Push a word onto the stack. */
 static void _push(muword val){
-     data_stack[ds_p] = val;
-     ds_p = (ds_p + 1);
+     if(ds_p < DATA_STACK_DEPTH){
+	  data_stack[ds_p] = val;
+	  ds_p = (ds_p + 1);
+     } else {
+	  /* Stack overflow */
+     }
 }
 
 static muword _rpop(void){
@@ -36,7 +40,7 @@ static muword _rpop(void){
      } else {
 	  rs_p = (rs_p - 1);
 	  val = ret_stack[rs_p];
-	  ret_stack[ds_p] = 0;
+	  ret_stack[rs_p] = 0;
 	  return val;
      }
 }

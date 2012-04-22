@@ -13,6 +13,7 @@
 
 # Processor Internal
 * 'If' branching
+* Method of accessing octets (For word-lengths greater than 8.)
 
 # Tooling/etc
 * An assembler/compiler

@@ -1,125 +1,209 @@
-/* cowMachine simulator/testbed
-   Copyright (c) 2012 by Tamber Penketh <tamber@furryhelix.co.uk>
+/* cow16
 
-   Permission to use, copy, modify, and distribute this software for
- any purpose with or without fee is hereby granted, provided that the
- above copyright notice and this permission notice appear in all
- copies.
+   Draft 0.0 implementation.
 
-   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUHTORS DISCLAIM ALL
- WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
- WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE
- AUTHORS BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL
- DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR
- PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
- PERFORMANCE OF THIS SOFTWARE.
- */
+*/
 
 #include <stdio.h>
-#include <stdint.h>
 #include <stdlib.h>
-
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+#include <curses.h>
 
-#include <errno.h>
-
-#include "err.h"
 #include "sim.h"
-#include "ops.h"
+#include "ui.h"
 
 static void usage(char *us){
      fprintf(stderr, "usage: %s [-options ...]\n", us);
-
      fprintf(stderr, "Where options include:\n");
-     fprintf(stderr, "\t-exec <filename>\t file to execute\n");
-     fprintf(stderr, "\t-delay <secs>\t Numbers of seconds to sleep between each instruction\n");
+     fprintf(stderr, "\t-exec <filename>\t file containing code to execute\n");
+     fprintf(stderr, "\t-delay <secs>\t Delay between execution of each instruction\n");
+     fprintf(stderr, "\t-bios <filename>\t File containing BIOS code.\n");
      exit(EXIT_FAILURE);
 }
 
+
+static void cycle(void){
+     if(main_mem[pc] != 00){
+	  decode(main_mem[pc]);
+	  pc = (pc + 1);
+     } else {
+	  op_name = "HALT";
+     }
+}
+
 int main(int argc, char **argv){
-     int i, ret, exe_fd;
-     char *prog_name = NULL;
-     uint8_t exe_header[5], delay = 0;
+     int i,delay, escape_loop = 0;
+
+     int row, col;
+
+     WINDOW *r_status, *r_port_a, *r_port_b;
+     WINDOW *s_data, *s_return, *s_intr;
+     WINDOW *key_bind, *statuswin;
+
+     char *prog_name;
 
      for(i = 1; i < argc; i++){
 	  char *arg = argv[i];
 
 	  if(arg[0] == '-'){
 	       switch(arg[1]){
+	       case 'b':
+		    /* -bios <filename> */
+		    if(++i >= argc) usage(argv[0]);
+
+		    bios_name = argv[i];
+		    continue;
 	       case 'e':
 		    /* -exec <filename> */
 		    if(++i >= argc) usage(argv[0]);
+
 		    prog_name = argv[i];
 		    continue;
+
 	       case 'd':
-		    /* -delay */
+		    /* -delay <secs> */
 		    if(++i >= argc) usage(argv[0]);
+
 		    delay = atoi(argv[i]);
 		    continue;
+
 	       default:
 		    usage(argv[0]);
+		    break;
 	       }
 	  }
+     } /* End of option-munching */
+
+     /* Begin to set up the display */
+     initscr();
+     clear();
+     noecho();
+     cbreak();
+     nodelay(stdscr, 1);
+
+     start_color();
+
+     init_pair(1, COLOR_RED, COLOR_BLACK);
+     init_pair(2, COLOR_YELLOW, COLOR_BLACK);
+     init_pair(3, COLOR_BLUE, COLOR_BLACK);
+     init_pair(4, COLOR_WHITE, COLOR_BLUE);
+
+     attron(COLOR_PAIR(1) | A_BOLD);
+     mvprintw(1, 5, "cow");
+     attron(COLOR_PAIR(4));
+     mvprintw(1, 8, "16");
+     attroff(COLOR_PAIR(4) | A_BOLD);
+
+     attron(A_REVERSE);
+     mvprintw(1, 16, " Have you hugged your cow today? ");
+     attroff(A_REVERSE);
+
+     refresh();
+     getmaxyx(stdscr, row, col);
+
+     r_status = newwin(1, (5 * NUM_STATUS_FLAGS + 8), 3, 1);
+     statuswin = newwin(2, 20, 4, 1);
+     r_port_a = newwin(1, (3*16) + 8, 7, 1);
+     r_port_b = newwin(1, (3*16) + 8, 8, 1);
+     s_data = newwin((DS_DEPTH + 2), 6, 3, 58);
+     s_return = newwin((RS_DEPTH + 2), 6, 3, 65);
+     s_intr = newwin((IS_DEPTH + 2), 6, 3, 72);
+
+     ui_update_reg_status(r_status);
+     ui_update_reg_port(r_port_a, 'A', io_a);
+     ui_update_reg_port(r_port_b, 'B', io_b);
+     ui_update_stack(s_data, ds, DS_DEPTH, ds_p, "DATA");
+     ui_update_stack(s_return, rs, RS_DEPTH, rs_p, "RETN");
+     ui_update_stack(s_intr, is, IS_DEPTH, is_p, "INTR");
+     if(op_name == NULL){ op_name = "NOP"; }
+     ui_update_info(statuswin, op_name);
+
+     key_bind = newwin(1, col, (row - 1), 0);
+
+     {
+	  /* Show key bindings */
+	  wattron(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 0, "Q");
+	  wattroff(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 1, ": Quit");
+
+	  wattron(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 8, "S");
+	  wattroff(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 9, ": Step");
+
+	  wattron(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 16, "R");
+	  wattroff(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 17, ": Run");
+
+	  wattron(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 23, "E");
+	  wattroff(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 24, ": rEset");
+
+	  wnoutrefresh(key_bind);
      }
 
-     /* Load exec file */
-     if(prog_name != NULL){
-	  /*
-	     cowMachine executables have a 4 byte header;
-	     2 bytes: signature ('MU')
-	     1 byte : word-length of target machine
-	     1 byte of padding.
-	  */
-	  if((exe_fd = ret = open(prog_name, O_RDONLY)) < 0){
-	       perror("Could not open program file");
-	       exit(EXIT_FAILURE);
+     doupdate();
+     refresh();
+
+     /* Load the BIOS file */
+     load_bios();
+
+     while(!escape_loop){
+	  char c = getch();
+
+	  switch(c){
+	  case 'q':
+	  case 'Q':
+	       escape_loop = 1;
+	       break;
+	  case 'r':
+	  case 'R':
+	       /* Toggle run status. */
+	       if(!(status & status_cpu_run)){
+		    /* Now running */
+		    status |= status_cpu_run;
+	       } else {
+		    status &= ~status_cpu_run;
+	       }
+
+	       break;
+	  case 's':
+	  case 'S':
+	       /* Run 1 cycle. */
+	       cycle();
+	       break;
+	  case 'e':
+	  case 'E':
+	       /* We don't call reset() here, because we may not want to start the CPU running again afterwards. */
+
+	       /* Clear registers */
+	       ds_p = rs_p = is_p = pc = status = 0;
+
+	       /* Reload BIOS. */
+	       load_bios();
+	  case ERR:
+	  default:
+	       break;
 	  }
-	  if((ret = read(exe_fd, (char *) exe_header, 4)) < 3){
-	       perror("Could not read header from program file");
-	       exit(EXIT_FAILURE);
+
+	  if((status & status_cpu_run) > 0){
+	       cycle();
 	  }
-	  if((exe_header[0] != 'M') && (exe_header[1] != 'U')){
-	       /* Not a mu-file */
-	       fprintf(stderr, "%s is not a cowMachine executable\n", prog_name);
-	       exit(EXIT_FAILURE);
-	  }
-	  if(exe_header[2] != (sizeof(muword)*8)){
-	       fprintf(stderr, "Word length mismatch; %s created for a %d-bit cowMachine, this machine has %lu bits.\n",
-		       prog_name, exe_header[2], (unsigned long)(sizeof(muword)*8));
-	       exit(EXIT_FAILURE);
-	  }
-     } else {
-	  fprintf(stderr, "Firmware must be provided. TODO: Built-in self-test firmware.\n");
-	  exit(EXIT_FAILURE);
+
+	  ui_update_reg_status(r_status);
+	  ui_update_reg_port(r_port_a, 'A', io_a);
+	  ui_update_reg_port(r_port_b, 'B', io_b);
+
+	  ui_update_stack(s_data, ds, DS_DEPTH, ds_p, "DATA");
+	  ui_update_stack(s_return, rs, RS_DEPTH, rs_p, "RETN");
+	  ui_update_stack(s_intr, is, IS_DEPTH, is_p, "INTR");
+	  ui_update_info(statuswin, op_name);
+	  doupdate();
      }
 
-     reset();
-
-     /* Load program into memory */
-     if((ret = (int) read(exe_fd, main_mem, (MAIN_MEM_SIZE - 1))) < 0){
-	  perror("Could not read program into program memory");
-	  exit(EXIT_FAILURE);
-     }
-     main_mem[ret+1] = 0x00;
-
-     /* We don't need to hold the file open now that the executable is
-      * entirely in the program memory. */
-     close(exe_fd);
-
-     /* Begin execution */
-     status |= S_CPU_RUN;
-
-     while((status & S_CPU_RUN) > 0){
-	  _stackprint();
-	  fprintf(stderr, "PC: %x\tOpcode: %s\tDSp: %x\tRSp: %x\tTOS: %x\n", pc, ops[main_mem[pc]], ds_p, rs_p, data_stack[(ds_p)]);
-	  decode(main_mem[pc]);
-	  sleep(delay);
-	  pc = (pc + 1);
-     }
-
-     exit(EXIT_SUCCESS);
+     endwin();
+     return EXIT_SUCCESS;
 }

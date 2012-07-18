@@ -1,30 +1,16 @@
-CFLAGS:=-std=c89 -Wall -Wextra -pedantic -g -I./include
+CFLAGS:=-std=c89 -Wall -Wextra -Werror -pedantic -g -I./include
 LINT:=splint
-LINT_OPTS:=
+LINT_OPTS:= -I./include
+LDFLAGS:=-lcurses
 
-8: *.c
-	gcc ${CFLAGS} -c $?
-	gcc ${CFLAGS} ${LDFLAGS} -o cm *.o
-
-.PHONY: 16
-16: *.c
-	gcc -DCOW_16_BITS ${CFLAGS} -c $?
-	gcc ${CFLAGS} ${LDFLAGS} -o cm.16 *.o
-
-.PHONY: 32
-32: *.c
-	gcc -DCOW_32_BITS ${CFLAGS} -c $?
-	gcc ${CFLAGS} ${LDFLAGS} -o cm.32 *.o
-
-.PHONY: 64
-64: *.c
-	gcc -DCOW_64_BITS ${CFLAGS} -c $?
-	gcc ${CFLAGS} ${LDFLAGS} -o cm.64 *.o
-
-.PHONY: clean
-clean:
-	-rm *.o core cm*
+cm: simulator.c operations.c ui.c main.c
+	${CC} ${CFLAGS} -c $?
+	${CC} ${CFLAGS} ${LDFLAGS} -o cm *.o
 
 .PHONY: lint
 lint: *.c
 	${LINT} ${LINT_OPTS} $?
+
+.PHONY: clean
+clean:
+	-rm *.o core cm *~

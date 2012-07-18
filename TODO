@@ -1,19 +1,13 @@
-# Code
-* More error-checking
-* Tests
+* I/O ports
+  - Both need actual I/O to something.
 
-# 'Hardware'
-* I/O
-  + Serial port
-  + Discs
 * Co-processors
-  + FPU
-* Busses and connections thereto.
-* Memory mapping?
+  - Concept needs work; I have no idea how I'm going to do this, yet;
+    nevermind how I'm going to implement it.
 
-# Processor Internal
-* 'If' branching
-* Method of accessing octets (For word-lengths greater than 8.)
+* Misc
+  - An assembler, because hand-assembling is a pain in the arse.
 
-# Tooling/etc
-* An assembler/compiler
+* Code
+  - Need to re-implement IRQs
+  - Nede to better-handle stack under/over flow.

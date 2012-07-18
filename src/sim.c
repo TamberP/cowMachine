@@ -1,7 +1,7 @@
 /* Simulation code for cow16 */
 
-#include "simulator.h"
-#include "operations.h"
+#include "sim.h"
+#include "ops.h"
 
 #include <curses.h>
 #include <string.h>

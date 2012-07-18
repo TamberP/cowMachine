@@ -2,7 +2,7 @@
 #define _UI_H_
 
 #include <curses.h>
-#include "simulator.h"
+#include "sim.h"
 
 /* Displays status register.
 

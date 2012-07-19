@@ -16,7 +16,6 @@ static void usage(char *us){
      fprintf(stderr, "usage: %s [-options ...]\n", us);
      fprintf(stderr, "Where options include:\n");
      fprintf(stderr, "\t-exec <filename>\t file containing code to execute\n");
-     fprintf(stderr, "\t-delay <secs>\t Delay between execution of each instruction\n");
      fprintf(stderr, "\t-bios <filename>\t File containing BIOS code.\n");
      exit(EXIT_FAILURE);
 }
@@ -27,12 +26,13 @@ static void cycle(void){
 	  decode(main_mem[pc]);
 	  pc = (pc + 1);
      } else {
+	  decode(main_mem[pc]);
 	  op_name = "HALT";
      }
 }
 
 int main(int argc, char **argv){
-     int i,delay, escape_loop = 0;
+     int i, escape_loop = 0;
 
      int row, col;
 
@@ -58,13 +58,6 @@ int main(int argc, char **argv){
 		    if(++i >= argc) usage(argv[0]);
 
 		    prog_name = argv[i];
-		    continue;
-
-	       case 'd':
-		    /* -delay <secs> */
-		    if(++i >= argc) usage(argv[0]);
-
-		    delay = atoi(argv[i]);
 		    continue;
 
 	       default:

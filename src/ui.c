@@ -29,7 +29,6 @@ void ui_update_reg_status(WINDOW *r_status) {
 
 /* Update display of I/O ports. */
 void ui_update_reg_port(WINDOW *r_port, char port_name, word port){
-     /* Port A update */
      wattron(r_port, COLOR_PAIR(2) | A_BOLD);
      mvwprintw(r_port, 0, 0, "PORT %c: ", port_name);
      wattroff(r_port, A_BOLD);

@@ -133,7 +133,12 @@ int main(int argc, char **argv){
 	  wattron(key_bind, A_BOLD);
 	  mvwprintw(key_bind, 0, 23, "E");
 	  wattroff(key_bind, A_BOLD);
-	  mvwprintw(key_bind, 0, 24, ": rEset");
+	  mvwprintw(key_bind, 0, 24, ": Reset");
+
+	  wattron(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 32, "D");
+	  wattroff(key_bind, A_BOLD);
+	  mvwprintw(key_bind, 0, 33, ": Dump Core");
 
 	  wnoutrefresh(key_bind);
      }
@@ -177,6 +182,11 @@ int main(int argc, char **argv){
 
 	       /* Reload BIOS. */
 	       load_bios();
+	  case 'D':
+	  case 'd':
+	       /* Dump our 'core' memory for examination with an
+		* external application. */
+	       make_cow_pat();
 	  case ERR:
 	  default:
 	       break;

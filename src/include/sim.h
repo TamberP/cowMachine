@@ -68,6 +68,9 @@ void load_bios(void);
 /* Decode and execute an instruction. */
 void decode(word instruction);
 
+/* Write out the core memory from the cow. */
+void make_cow_pat(void);
+
 extern char *bios_name;
 
 /* I/O ports */

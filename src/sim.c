@@ -271,3 +271,48 @@ void load_bios(void){
 	  exit(ret);
      }
 }
+
+void make_cow_pat(void){
+     int pat_fd, ret;
+
+     int rows, cols;
+     WINDOW *err;
+
+     if((pat_fd = ret = open("cow.pat", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR)) < 0){
+	  ret = errno;
+	  getmaxyx(stdscr, rows, cols);
+
+	  err = newwin(rows, cols, 0, 0);
+	  wattron(err, COLOR_PAIR(1) | A_BOLD);
+	  wprintw(err, "Error: Could not write cow.pat: %s\n", strerror(ret));
+	  wprintw(err, "Press any key to continue.");
+
+	  wrefresh(err);
+	  refresh();
+	  nodelay(stdscr, 0);
+	  getch();
+
+	  /* Go back to simulation. */
+	  nodelay(stdscr, 1);
+     }
+
+     if((ret = (int) write(pat_fd, main_mem, (MAIN_MEM_SIZE - 1))) < 0){
+	  ret = errno;
+
+	  getmaxyx(stdscr, rows, cols);
+
+	  err  = newwin(rows, cols, 0, 0);
+	  wattron(err, COLOR_PAIR(1) | A_BOLD);
+	  wprintw(err, "Error: Could not write cow.pat: %s\n", strerror(ret));
+	  wprintw(err, "Press any key to continue.");
+
+	  wrefresh(err);
+	  refresh();
+	  nodelay(stdscr, 0);
+	  getch();
+
+	  nodelay(stdscr, 1);
+     }
+
+     close(pat_fd);
+}

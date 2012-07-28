@@ -394,3 +394,15 @@ void core_cmp_within(void){
 
 void core_nop(void){
 }
+
+/* Swap top values on stack. */
+
+void core_swap(void){
+     word a, b;
+
+     a = _pop();
+     b = _pop();
+
+     _push(a);
+     _push(b);
+}

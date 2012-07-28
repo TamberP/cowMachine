@@ -197,6 +197,10 @@ void decode (word instruction){
 	       op_name = "NOP";
 	       core_nop();
 	       break;
+	  case 0x24:
+	       op_name = "SWAP";
+	       core_swap();
+	       break;
 	  }
      } else {
 	  /* TODO: Send the instruction to the right processor. */

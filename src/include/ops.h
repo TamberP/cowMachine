@@ -81,6 +81,14 @@ void core_op_mult();
 */
 void core_op_div();
 
+
+/*
+  Op: swap
+  Desc: Swap top two values on stack.
+  Stack effect: ( n1 n2 -- n2 n1 )
+*/
+void core_swap(void);
+
 /*
    Op: drop
    Desc: Discard value at top of data stack.

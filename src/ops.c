@@ -7,7 +7,7 @@
 /* Internal, stack-manipulation, operations */
 
 /*** Data stack ***/
-static word _pop(void){
+word _pop(void){
      word val;
 
      if(ds_p == 0){
@@ -21,7 +21,7 @@ static word _pop(void){
 }
 
 
-static void _push(word val){
+void _push(word val){
      if(ds_p < DS_DEPTH){
 	  ds[ds_p] = val;
 	  ds_p = (ds_p + 1);
@@ -32,7 +32,7 @@ static void _push(word val){
 }
 
 /*** Return stack ***/
-static word _rpop(void){
+word _rpop(void){
      word val;
 
      if(rs_p == 0){
@@ -47,7 +47,7 @@ static word _rpop(void){
 }
 
 
-static void _rpush(word val){
+void _rpush(word val){
      if(rs_p < RS_DEPTH){
 	  rs[rs_p] = val;
 	  rs_p = (rs_p + 1);
@@ -58,7 +58,7 @@ static void _rpush(word val){
 }
 
 /*** Interrupt stack ***/
-static word _ipop(void){
+word _ipop(void){
      word val;
 
      if(is_p == 0){
@@ -73,7 +73,7 @@ static word _ipop(void){
      }
 }
 
-static void _ipush(word val){
+void _ipush(word val){
      if(is_p < IS_DEPTH){
 	  is[is_p] = val;
 	  is_p = (is_p + 1);

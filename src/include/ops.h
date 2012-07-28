@@ -3,6 +3,20 @@
 
 #include "sim.h"
 
+
+/* ** Internal stack-manipulation functions ** */
+word _pop(void);
+
+void _push(word);
+
+word _rpop(void);
+
+void _rpush(word);
+
+word _ipop(void);
+
+void _ipush(word);
+
 /*
   Op: nop
   Desc: Do nothing.

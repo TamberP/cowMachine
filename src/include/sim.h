@@ -77,6 +77,8 @@ extern char *bios_name;
 extern word io_a;
 extern word io_b;
 
+#define IVT_PTR_ADDR 0x102
+
 /* Addresses for ports and port controls. */
 #define MMAP_PORT_A 0x103
 #define MMAP_PORT_B 0x105

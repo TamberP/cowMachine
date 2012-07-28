@@ -193,7 +193,7 @@ stack.
 	+--------------+------------+----------------------+--------------------------------------+
 	| 0Fh          | <<         | ( n2 n1 -- n )       | Bitwise logical left-shift of top    |
 	|              |            |                      |value on stack, by number of places   |
-	|              |            |                      |given by value statement on stack.    |
+	|              |            |                      |given by value second on stack.       |
 	+--------------+------------+----------------------+--------------------------------------+
 	| 10h          | >>         | ( n2 n1 -- n )       | Bitwise logical right-shift of top   |
 	|              |            |                      |value on stack, by number of places   |

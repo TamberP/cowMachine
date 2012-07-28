@@ -13,4 +13,4 @@ lint: *.c
 
 .PHONY: clean
 clean:
-	-rm *.o core cm *~
+	-rm *.o core cm *~ cow.pat

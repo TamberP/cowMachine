@@ -74,14 +74,12 @@ which is limited to 256 words of code. In theory, though, it would be
 possible to use this to configure an I/O port to load the rest of the
 code through.
 
-However, see the TODO.
+However, see the [TODO](#TODO).
 
 ## Bugs ##
 
 * Lots.
-
 * Probably some relating to endianess.
-
 * Crashes when stacks are over/underflowed need proper
   handling. (Probably interrupts.)
 
@@ -99,11 +97,40 @@ However, see the TODO.
     + Data stack
     + Return stack
     + Interrupt stack
-* Memory-mapped I/O
+* Memory-mapped I/O [Which doesn't I, and only some O, at present.]
 
-## Features-to-be ##
 
-* Extensible via addition of co-processors
+
+## TODO ##
+
+* Configurable delay between CPU cycles. (Blocks on multithreading.)
+* Interrupts
+* An assembler/compiler, because hand-assembling is a pain in the proverbial.
+* Less asploding on stack under/overflows. (Probably waiting on interrupts.)
+
+### Multithreading ###
+
+Everything currently runs in a single thread, so user input is blocked by the
+currently-executing simulator cycle. At the very least, the UI and simulator
+should be separated.
+
+Considering the messy design, this is likely to take quite a while to unravel to
+make workable. (And will probably result in another almost-complete rewrite.)
+
+### I/O ###
+
+There is no real I/O yet. The only thing that comes close is the blinkenlights
+of the UI, and that's not terribly useful. Probably blocks on multithreading; or
+at least would make more sense to do after multithreading.
+
+I have no plans for how the read/writes from the ports will do 'useful' things,
+yet. Possibly something along the lines of sockets to swappable interface
+programs.
+
+### Accessory Processors ###
+
+Same as I/O, but moreso. I have no idea for design, nor
+implementation; it's just waiting on a sufficiently ${X} ${Y}.
 
 # Instructions #
 

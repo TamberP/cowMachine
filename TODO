@@ -1,13 +1,1 @@
-* I/O ports
-  - Both need actual I/O to something.
-
-* Co-processors
-  - Concept needs work; I have no idea how I'm going to do this, yet;
-    nevermind how I'm going to implement it.
-
-* Misc
-  - An assembler, because hand-assembling is a pain in the arse.
-
-* Code
-  - Need to re-implement IRQs
-  - Nede to better-handle stack under/over flow.
+-- Moved to TODO section in README. Hooray, consolidated documentation --

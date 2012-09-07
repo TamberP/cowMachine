@@ -103,19 +103,16 @@ However, see the [TODO](#TODO).
 
 ## TODO ##
 
-* Configurable delay between CPU cycles. (Blocks on multithreading.)
 * Interrupts
 * An assembler/compiler, because hand-assembling is a pain in the proverbial.
 * Less asploding on stack under/overflows. (Probably waiting on interrupts.)
 
-### Multithreading ###
+### Done ###
 
-Everything currently runs in a single thread, so user input is blocked by the
-currently-executing simulator cycle. At the very least, the UI and simulator
-should be separated.
+* Multithreading.  commit e32958a
+* Configurable delay between CPU cycles. (Blocks on multithreading.)  Done: commit e32958a
+* Make single-step work again after multithreading splittage. Done: commit 342a5f9
 
-Considering the messy design, this is likely to take quite a while to unravel to
-make workable. (And will probably result in another almost-complete rewrite.)
 
 ### I/O ###
 

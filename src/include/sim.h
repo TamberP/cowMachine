@@ -14,6 +14,11 @@
 #define MAIN_MEM_SIZE (64 KILOWORD)
 #endif /* MAIN_MEM_SIZE */
 
+/* Address at which code and user-data section of memory begins. */
+#ifndef RSRV_MEM_END
+#define RSRV_MEM_END 0x107
+#endif /* RSRV_MEM_END */
+
 #define NUM_STATUS_FLAGS 2
 
 enum {

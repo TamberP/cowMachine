@@ -274,6 +274,10 @@ void load_bios(void){
 	  endwin();
 	  exit(ret);
      }
+
+     /* Set jump to end of reserved memory */
+     main_mem[0x100] = 0x14;
+     main_mem[0x101] = RSRV_MEM_END;
 }
 
 void make_cow_pat(void){

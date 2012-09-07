@@ -23,18 +23,21 @@ static void usage(char *us){
 }
 
 int cycle_delay = 0;
+bool single_step = false;
 
 static void * cpu_cycles(void *arg){
      while(1){
-	  if((status & status_cpu_run) > 0){
-	       if(main_mem[pc] != 00){
-		    decode(main_mem[pc]);
-		    pc = (pc + 1);
-	       } else {
-		    decode(main_mem[pc]);
+	  if(((status & status_cpu_run) > 0) | (single_step == true)){
+	       decode(main_mem[pc]);
+	       if(main_mem[pc] == 00)
 		    op_name = "HALT";
-	       }
+	       else
+		    pc = (pc + 1);
 	  }
+
+	  if(single_step == true)
+	       single_step = false;
+
 	  sleep(cycle_delay);
      }
      return NULL;
@@ -190,6 +193,7 @@ int main(int argc, char **argv){
 	  case 's':
 	  case 'S':
 	       /* Run 1 cycle. TODO: Make work with multithreading.*/
+	       single_step = true;
 	       break;
 	  case 'e':
 	  case 'E':

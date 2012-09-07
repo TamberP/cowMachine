@@ -358,7 +358,7 @@ remainder is taken up by user-code and data.
     +-----------------+
     | CTRL PORT B     | 106
     +-----------------+
-    | Code, user data | 106
+    | Code, user data | 107
             ...
     |                 | FFFF
     +-----------------+

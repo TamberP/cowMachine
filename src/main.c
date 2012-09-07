@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <curses.h>
+#include <pthread.h>
 
 #include "sim.h"
 #include "ui.h"
@@ -17,19 +18,28 @@ static void usage(char *us){
      fprintf(stderr, "Where options include:\n");
      fprintf(stderr, "\t-exec <filename>\t file containing code to execute\n");
      fprintf(stderr, "\t-bios <filename>\t File containing BIOS code.\n");
+     fprintf(stderr, "\t-delay <num>\t\t Number of seconds between each cpu cycle. (Defaults to 0)\n");
      exit(EXIT_FAILURE);
 }
 
+int cycle_delay = 0;
 
-static void cycle(void){
-     if(main_mem[pc] != 00){
-	  decode(main_mem[pc]);
-	  pc = (pc + 1);
-     } else {
-	  decode(main_mem[pc]);
-	  op_name = "HALT";
+static void * cpu_cycles(void *arg){
+     while(1){
+	  if((status & status_cpu_run) > 0){
+	       if(main_mem[pc] != 00){
+		    decode(main_mem[pc]);
+		    pc = (pc + 1);
+	       } else {
+		    decode(main_mem[pc]);
+		    op_name = "HALT";
+	       }
+	  }
+	  sleep(cycle_delay);
      }
+     return NULL;
 }
+
 
 int main(int argc, char **argv){
      int i, escape_loop = 0;
@@ -41,6 +51,7 @@ int main(int argc, char **argv){
      WINDOW *key_bind, *statuswin;
 
      char *prog_name;
+     pthread_t *cpu_sim = NULL;
 
      for(i = 1; i < argc; i++){
 	  char *arg = argv[i];
@@ -58,6 +69,11 @@ int main(int argc, char **argv){
 		    if(++i >= argc) usage(argv[0]);
 
 		    prog_name = argv[i];
+		    continue;
+	       case 'd':
+		    /* -delay <num> */
+		    if(++i >= argc) usage(argv[0]);
+		    cycle_delay = atoi(argv[i]);
 		    continue;
 
 	       default:
@@ -149,6 +165,9 @@ int main(int argc, char **argv){
      /* Load the BIOS file */
      load_bios();
 
+     cpu_sim = malloc(sizeof(pthread_t));
+     pthread_create(cpu_sim, NULL, (&cpu_cycles), NULL);
+
      while(!escape_loop){
 	  char c = getch();
 
@@ -170,8 +189,7 @@ int main(int argc, char **argv){
 	       break;
 	  case 's':
 	  case 'S':
-	       /* Run 1 cycle. */
-	       cycle();
+	       /* Run 1 cycle. TODO: Make work with multithreading.*/
 	       break;
 	  case 'e':
 	  case 'E':
@@ -190,10 +208,6 @@ int main(int argc, char **argv){
 	  case ERR:
 	  default:
 	       break;
-	  }
-
-	  if((status & status_cpu_run) > 0){
-	       cycle();
 	  }
 
 	  ui_update_reg_status(r_status);

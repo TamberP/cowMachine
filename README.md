@@ -97,7 +97,8 @@ However, see the [TODO](#TODO).
     + Data stack
     + Return stack
     + Interrupt stack
-* Memory-mapped I/O [Which doesn't I, and only some O, at present.]
+* Memory-mapped I/O (Simulated as a pair of ports that read and write
+  to files/named-pipes/whatever you want to plug into it.)
 
 
 

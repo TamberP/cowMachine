@@ -10,9 +10,11 @@
 #include <curses.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <string.h>
 
 #include "sim.h"
 #include "ui.h"
+#include "io.h"
 
 static void usage(char *us){
      fprintf(stderr, "usage: %s [-options ...]\n", us);
@@ -54,7 +56,7 @@ int main(int argc, char **argv){
      WINDOW *s_data, *s_return, *s_intr;
      WINDOW *key_bind, *statuswin;
 
-     char *prog_name;
+     char *prog_name, *io_a_file = "", *io_b_file = "";
      pthread_t *cpu_sim = NULL;
 
      for(i = 1; i < argc; i++){
@@ -79,6 +81,23 @@ int main(int argc, char **argv){
 		    if(++i >= argc) usage(argv[0]);
 		    cycle_delay = atoi(argv[i]);
 		    continue;
+	       case 'c':
+		    /* -com? <file> */
+		    switch(arg[4]){
+		    case '1':
+			 /* -com1 <file> */
+			 if(++i >= argc) usage(argv[0]);
+			 io_a_file = argv[i];
+			 continue;
+		    case '2':
+			 /* -com2 <file> */
+			 if(++i >= argc) usage(argv[0]);
+			 io_b_file = argv[i];
+			 continue;
+		    default:
+			 usage(argv[0]);
+			 break;
+		    }
 
 	       default:
 		    usage(argv[0]);
@@ -86,6 +105,10 @@ int main(int argc, char **argv){
 	       }
 	  }
      } /* End of option-munching */
+
+     if((i = initialise_io(io_a_file, io_b_file)) < 0){
+	  fprintf(stderr, "Couldn't initialise I/O: %s", strerror(i));
+     }
 
      /* Begin to set up the display */
      initscr();

@@ -3,7 +3,7 @@ LINT:=splint
 LINT_OPTS:= -I./include
 LDFLAGS:=-lcurses -lpthread
 
-cm:  sim.c ops.c ui.c irq.c main.c
+cm:  sim.c ops.c ui.c irq.c io.c main.c
 	${CC} ${CFLAGS} -c $?
 	${CC} ${CFLAGS} ${LDFLAGS} -o cm *.o
 

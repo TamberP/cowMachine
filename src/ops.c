@@ -1,5 +1,6 @@
 #include "sim.h"
 #include "ops.h"
+#include "io.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -99,10 +100,14 @@ void core_op_store(void){
      n    = _pop();
 
      if((addr == MMAP_PORT_A) || (addr == MMAP_PORT_B)){
-	  if(addr == MMAP_PORT_A)
+	  if(addr == MMAP_PORT_A){
 	       io_a = n;
-	  if(addr == MMAP_PORT_B)
+	       io_a_xmit(n);
+	  }
+	  if(addr == MMAP_PORT_B){
 	       io_b = n;
+	       io_b_xmit(n);
+	  }
      } else {
 	  main_mem[addr] = n;
      }
@@ -114,8 +119,10 @@ void core_op_fetch(void){
 
      if((addr == MMAP_PORT_A) || (addr == MMAP_PORT_B)){
 	  if(addr == MMAP_PORT_A)
+	       io_a = io_a_recv();
 	       _push(io_a);
 	  if(addr == MMAP_PORT_B)
+	       io_b = io_b_recv();
 	       _push(io_b);
      } else {
 	  _push(main_mem[addr]);

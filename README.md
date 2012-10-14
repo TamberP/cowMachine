@@ -116,13 +116,8 @@ However, see the [TODO](#TODO).
 
 ### I/O ###
 
-There is no real I/O yet. The only thing that comes close is the blinkenlights
-of the UI, and that's not terribly useful. Probably blocks on multithreading; or
-at least would make more sense to do after multithreading.
-
-I have no plans for how the read/writes from the ports will do 'useful' things,
-yet. Possibly something along the lines of sockets to swappable interface
-programs.
+Done: I/O to files/named pipes added as of commit bf39980; use the
+options -com1 and -com2 to specify a filename for each.
 
 ### Accessory Processors ###
 

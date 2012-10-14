@@ -62,6 +62,11 @@ int io_xmit(int fd, word data){
      uint8_t octet[2];
      int ret;
 
+     if(fd == 0){
+	  /* Nothing to do here */
+	  return 0;
+     }
+
      /* XXX: This seems a little bit dodgy to me */
 
      octet[0] = (data>>8) & 255;
@@ -83,6 +88,10 @@ int io_xmit(int fd, word data){
 word io_recv(int fd){
      uint8_t octet[2];
      word tmp;
+
+     if(fd == 0){
+	  return (word) 0000;
+     }
 
      read(fd, octet, 2);
 

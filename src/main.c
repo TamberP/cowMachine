@@ -29,6 +29,10 @@ int cycle_delay = 0;
 bool single_step = false;
 
 static void * cpu_cycles(void *arg){
+     arg = NULL; /* To shut the compiler up about arg being un-used;
+		  * since it's just there so the function has the
+		  * correct prototype for pthread_create */
+
      while(1){
 	  if(((status & status_cpu_run) > 0) | (single_step == true)){
 	       decode(main_mem[pc]);

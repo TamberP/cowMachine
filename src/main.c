@@ -47,7 +47,7 @@ static void * cpu_cycles(void *arg){
 
 	  sleep(cycle_delay);
      }
-     return NULL;
+     return arg;
 }
 
 
@@ -60,7 +60,7 @@ int main(int argc, char **argv){
      WINDOW *s_data, *s_return, *s_intr;
      WINDOW *key_bind, *statuswin;
 
-     char *prog_name, *io_a_file = "", *io_b_file = "";
+     char /**prog_name,*/ *io_a_file = "", *io_b_file = "";
      pthread_t *cpu_sim = NULL;
 
      for(i = 1; i < argc; i++){
@@ -78,7 +78,7 @@ int main(int argc, char **argv){
 		    /* -exec <filename> */
 		    if(++i >= argc) usage(argv[0]);
 
-		    prog_name = argv[i];
+		    /*	    prog_name = argv[i];*/
 		    continue;
 	       case 'd':
 		    /* -delay <num> */
